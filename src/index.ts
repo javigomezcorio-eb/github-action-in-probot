@@ -1,6 +1,11 @@
 import type { Probot } from "probot";
 
-import { cancelWorkflowRun, getErrorStatus, postCommitComment } from "./github.js";
+import {
+  cancelWorkflowRun,
+  createCheckRun,
+  getErrorStatus,
+  postCommitComment,
+} from "./github.js";
 import {
   CANCELLATION_MESSAGE,
   decideCancellation,
@@ -112,6 +117,38 @@ export default (app: Probot): void => {
           error,
         },
         "failed to post cancellation comment",
+      );
+    }
+
+    try {
+      await createCheckRun(
+        context,
+        ref,
+        run.head_sha,
+        "🚫 Pipeline Cancelled by Policy Enforcement",
+        CANCELLATION_MESSAGE,
+      );
+
+      context.log.info(
+        {
+          ...runLog,
+          actionTaken: "check_run_created",
+          sha: run.head_sha,
+        },
+        "check run created",
+      );
+    } catch (error: unknown) {
+      const status = getErrorStatus(error);
+
+      context.log.error(
+        {
+          ...runLog,
+          actionTaken: "check_run_failed",
+          errorStatus: status,
+          sha: run.head_sha,
+          error,
+        },
+        "failed to create check run",
       );
     }
   });

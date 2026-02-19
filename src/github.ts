@@ -37,6 +37,27 @@ export async function postCommitComment(
   );
 }
 
+export async function createCheckRun(
+  context: Context,
+  ref: RepoRef,
+  sha: string,
+  title: string,
+  summary: string,
+): Promise<void> {
+  await context.octokit.request("POST /repos/{owner}/{repo}/check-runs", {
+    owner: ref.owner,
+    repo: ref.repo,
+    name: "Policy Enforcement",
+    head_sha: sha,
+    status: "completed",
+    conclusion: "cancelled",
+    output: {
+      title,
+      summary,
+    },
+  });
+}
+
 export function getErrorStatus(error: unknown): number | undefined {
   if (typeof error === "object" && error !== null && "status" in error) {
     const status = (error as { status?: unknown }).status;
