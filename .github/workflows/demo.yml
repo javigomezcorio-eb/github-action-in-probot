@@ -1,0 +1,41 @@
+name: Demo Workflow - Will Be Cancelled
+
+on:
+  push:
+    branches: 
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  demo-job:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Print welcome message
+        run: |
+          echo "🚀 Demo workflow started!"
+          echo "This workflow will be cancelled by the Policy Enforcement Bot"
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "SHA: ${{ github.sha }}"
+      
+      - name: Simulate some work
+        run: |
+          echo "Doing some work... (this will be cancelled)"
+          sleep 5
+          echo "More work..."
+          sleep 5
+      
+      - name: This step should never run
+        run: |
+          echo "❌ If you see this, the cancellation didn't work!"
+          echo "The bot should have cancelled this workflow by now"
+      
+      - name: Final step
+        run: |
+          echo "✅ Workflow completed (should not happen during freeze)"

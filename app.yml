@@ -1,0 +1,13 @@
+name: github-actions-policy-enforcement-app
+url: https://example.com
+
+# App subscription
+default_events:
+  - workflow_run
+
+# Least-privilege baseline for this app's behavior
+default_permissions:
+  actions: write
+  checks: write
+  contents: read
+  statuses: write
